@@ -11,29 +11,29 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final prodData = Provider.of<Product>(context);
-    return Consumer<Product>(
-      builder: (ctx, prodData, _) => Card(
-        elevation: 10,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(
-                context,
-              ).pushNamed(
-                ProductDetailScreen.productDetailScreenRoute,
-                arguments: prodData.id,
-              );
-            },
-            child: GridTile(
-              child: Image.network(
-                prodData.imageUrl,
-                fit: BoxFit.cover,
-              ),
-              footer: GridTileBar(
-                backgroundColor: Colors.black87,
-                leading: IconButton(
+    final prodData = Provider.of<Product>(context, listen: false);
+    return Card(
+      elevation: 10,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(
+              context,
+            ).pushNamed(
+              ProductDetailScreen.productDetailScreenRoute,
+              arguments: prodData.id,
+            );
+          },
+          child: GridTile(
+            child: Image.network(
+              prodData.imageUrl,
+              fit: BoxFit.cover,
+            ),
+            footer: GridTileBar(
+              backgroundColor: Colors.black87,
+              leading: Consumer<Product>(
+                builder: (ctx, prodData, _) => IconButton(
                   icon: Icon(
                     prodData.isFavorite
                         ? Icons.favorite
@@ -41,14 +41,14 @@ class ProductItem extends StatelessWidget {
                   ),
                   onPressed: () => prodData.toggleFavorite(),
                 ),
-                title: Text(
-                  prodData.title,
-                  textAlign: TextAlign.center,
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.shopping_cart),
-                  onPressed: () {},
-                ),
+              ),
+              title: Text(
+                prodData.title,
+                textAlign: TextAlign.center,
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.shopping_cart),
+                onPressed: () {},
               ),
             ),
           ),

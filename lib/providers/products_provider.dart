@@ -37,9 +37,27 @@ class ProductsProvider with ChangeNotifier {
     ),
   ];
 
+  //var _showFavoritesOnly = false;
+
   List<Product> get items {
+    // if (_showFavoritesOnly)
+    //   return _items.where((prod) => prod.isFavorite).toList();
     return [..._items];
   }
+
+  List<Product> get favoritItems {
+    return _items.where((prod) => prod.isFavorite).toList();
+  }
+
+  // void showFavoritesOnly() {
+  //   _showFavoritesOnly = true;
+  //   notifyListeners();
+  // }
+
+  // void showAll() {
+  //   _showFavoritesOnly = false;
+  //   notifyListeners();
+  // }
 
   void addProduct() {
     //_items.add('value');
