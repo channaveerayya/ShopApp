@@ -1,5 +1,7 @@
 import 'package:ShopApp/providers/product.dart';
+import 'package:ShopApp/providers/products_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const editProductScreenRoute = '/edit-product';
@@ -20,11 +22,39 @@ class _EditProductScreenState extends State<EditProductScreen> {
     description: '',
     imageUrl: '',
   );
+  var _isInit = true;
+  var _initValue = {
+    'title': '',
+    'description': '',
+    'price': '',
+    //'imageUrl': ''
+  };
 
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final prodId = ModalRoute.of(context).settings.arguments as String;
+      if (prodId != null) {
+        _editProduct = Provider.of<ProductsProvider>(context, listen: false)
+            .findById(prodId);
+        _initValue = {
+          'title': _editProduct.title,
+          'description': _editProduct.description,
+          'price': _editProduct.price.toString(),
+          //'imageUrl': _editProduct.imageUrl,
+          'imageUrl': '',
+        };
+        _imageUrlController.text = _editProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   void _updateImageUrl() {
@@ -54,7 +84,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final isValid = _form.currentState.validate();
     if (!isValid) return;
     _form.currentState.save();
-    print(_editProduct.title);
+    if (_editProduct.id != null) {
+      Provider.of<ProductsProvider>(context, listen: false)
+          .updateProduct(_editProduct.id, _editProduct);
+    } else {
+      Provider.of<ProductsProvider>(context, listen: false)
+          .addProduct(_editProduct);
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -76,6 +114,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField(
+                initialValue: _initValue['title'],
                 decoration: InputDecoration(labelText: 'Title'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
@@ -93,9 +132,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   description: _editProduct.description,
                   price: _editProduct.price,
                   imageUrl: _editProduct.imageUrl,
+                  isFavorite: _editProduct.isFavorite,
                 ),
               ),
               TextFormField(
+                initialValue: _initValue['price'],
                 decoration: InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -121,9 +162,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   description: _editProduct.description,
                   price: double.parse(newValue),
                   imageUrl: _editProduct.imageUrl,
+                  isFavorite: _editProduct.isFavorite,
                 ),
               ),
               TextFormField(
+                initialValue: _initValue['description'],
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
@@ -144,6 +187,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   description: newValue,
                   price: _editProduct.price,
                   imageUrl: _editProduct.imageUrl,
+                  isFavorite: _editProduct.isFavorite,
                 ),
               ),
               Row(
@@ -166,6 +210,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                   Expanded(
                     child: TextFormField(
+                      // initialValue: _initValue['imageUrl'],
                       decoration: InputDecoration(labelText: 'Image url'),
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
@@ -192,6 +237,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         description: _editProduct.description,
                         price: _editProduct.price,
                         imageUrl: newValue,
+                        isFavorite: _editProduct.isFavorite,
                       ),
                     ),
                   )
