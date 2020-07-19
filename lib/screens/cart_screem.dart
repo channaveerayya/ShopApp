@@ -1,5 +1,6 @@
 import 'package:ShopApp/providers/cart.dart';
 import 'package:ShopApp/providers/orders.dart';
+import 'package:ShopApp/screens/orders_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/cart_item.dart' as ci;
@@ -44,6 +45,8 @@ class CartScreen extends StatelessWidget {
                         cart.totalAmount,
                       );
                       cart.clear();
+                      Navigator.of(context)
+                          .pushReplacementNamed(OrdersScreen.ordersSreenRoute);
                     },
                     child: Text(
                       'Order Now',

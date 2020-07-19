@@ -21,6 +21,17 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       appBar: AppBar(
         title: Text('MyShop'),
         actions: <Widget>[
+          Consumer<Cart>(
+            builder: (_, cartData, ch) => Badge(
+              child: ch,
+              value: cartData.itemCount.toString(),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(CartScreen.cartScreenRoute),
+            ),
+          ),
           PopupMenuButton(
             itemBuilder: (_) => [
               PopupMenuItem(
@@ -39,17 +50,6 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               });
             },
           ),
-          Consumer<Cart>(
-            builder: (_, cartData, ch) => Badge(
-              child: ch,
-              value: cartData.itemCount.toString(),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.shopping_cart),
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(CartScreen.cartScreenRoute),
-            ),
-          )
         ],
       ),
       drawer: AppDrawer(),
