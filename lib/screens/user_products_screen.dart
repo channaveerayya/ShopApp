@@ -1,4 +1,5 @@
 import 'package:ShopApp/providers/products_provider.dart';
+import 'package:ShopApp/screens/edit_product_screen.dart';
 import 'package:ShopApp/widgets/app_drawer.dart';
 import 'package:ShopApp/widgets/user_product_item.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ class UserProductScreen extends StatelessWidget {
       ),
       drawer: AppDrawer(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.of(context)
+            .pushNamed(EditProductScreen.editProductScreenRoute),
         child: Icon(
           Icons.add,
           color: Colors.white,
