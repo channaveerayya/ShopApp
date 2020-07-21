@@ -30,7 +30,28 @@ class UserProductItem extends StatelessWidget {
                 Icons.delete,
                 color: Colors.red,
               ),
-              onPressed: () => deleteHandle(id),
+              onPressed: () async {
+                try {
+                  await deleteHandle(id);
+                } catch (e) {
+                  await showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text(
+                        'Could not Deleting',
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                      content: Text('Oops.. Something went wrong'),
+                      actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text('Okay')),
+                      ],
+                    ),
+                  );
+                }
+              },
             ),
           ],
         ),
