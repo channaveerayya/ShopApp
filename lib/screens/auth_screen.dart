@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:ShopApp/models/http_exceptions.dart';
 import 'package:ShopApp/providers/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -101,6 +102,19 @@ class _AuthCardState extends State<AuthCard> {
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
+  void _showErrorDailog(String msg) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(msg),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () => Navigator.of(context).pop(), child: Text('Okay'))
+        ],
+      ),
+    );
+  }
 
   void _submit() async {
     if (!_formKey.currentState.validate()) {
@@ -111,17 +125,37 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      await Provider.of<Auth>(context, listen: false).signIn(
-        _authData['email'],
-        _authData['password'],
-      );
-    } else {
-      await Provider.of<Auth>(context, listen: false).signUp(
-        _authData['email'],
-        _authData['password'],
-      );
+
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false).signIn(
+          _authData['email'],
+          _authData['password'],
+        );
+      } else {
+        await Provider.of<Auth>(context, listen: false).signUp(
+          _authData['email'],
+          _authData['password'],
+        );
+      }
+    } on HttpException catch (e) {
+      var errorMessage = "Authenticate failed";
+      if (e.toString().contains('EMAIL_EXISTS')) {
+        errorMessage = "Email address is already used";
+      } else if (e.toString().contains('INVALID_EMAIL')) {
+        errorMessage = "Email invalid";
+      } else if (e.toString().contains('WEAK_PASSWORD')) {
+        errorMessage = "Password is to weak";
+      } else if (e.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = "Email not found";
+      } else {
+        errorMessage = 'Something went Wrong';
+      }
+      _showErrorDailog(errorMessage);
+    } catch (e) {
+      _showErrorDailog("Could not authenticate you");
     }
+
     setState(() {
       _isLoading = false;
     });
